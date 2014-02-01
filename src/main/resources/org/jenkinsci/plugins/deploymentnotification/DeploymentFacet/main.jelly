@@ -1,0 +1,10 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <h1>Deployed!</h1>
+  <ul>
+    <j:forEach var="r" items="${it.records}">
+      <li>
+        ${r.host}
+      </li>
+    </j:forEach>
+  </ul>
+</j:jelly>
