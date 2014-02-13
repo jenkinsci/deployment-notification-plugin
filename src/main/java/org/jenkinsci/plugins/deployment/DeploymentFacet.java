@@ -19,5 +19,8 @@ public class DeploymentFacet extends FingerprintFacet {
     public void add(HostRecord r) throws IOException {
         records.add(r);
         getFingerprint().save();
+        for (DeploymentFacetListener l : DeploymentFacetListener.all()) {
+            l.onChange(this,r);
+        }
     }
 }
