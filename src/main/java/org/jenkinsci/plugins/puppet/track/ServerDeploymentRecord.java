@@ -1,5 +1,7 @@
 package org.jenkinsci.plugins.puppet.track;
 
+import hudson.Util;
+
 /**
  * Record of the deployment.
  *
@@ -33,5 +35,16 @@ public class ServerDeploymentRecord {
 
     public String getPath() {
         return path;
+    }
+
+    /**
+     * Gets the string that says how long since this build has scheduled.
+     *
+     * @return
+     *      string like "3 minutes" "1 day" etc.
+     */
+    public String getTimestampString() {
+        long duration = System.currentTimeMillis()-timestamp;
+        return Util.getPastTimeString(duration);
     }
 }

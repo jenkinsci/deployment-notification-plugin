@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.puppet.track;
 
+import hudson.Extension;
 import hudson.Util;
 import hudson.model.Fingerprint;
 import hudson.model.FingerprintMap;
@@ -23,6 +24,7 @@ import java.util.Collection;
  *
  * @author Kohsuke Kawaguchi
  */
+@Extension
 public class RootActionImpl implements RootAction {
     @Inject
     private Jenkins jenkins;
@@ -46,8 +48,6 @@ public class RootActionImpl implements RootAction {
     public HttpResponse doReport(StaplerRequest req) throws IOException {
         // TODO: permission check
         // TODO: stapler YAML support
-
-        FingerprintMap fm = jenkins.getFingerprintMap();
 
         PuppetReport r = PuppetReport.load(req.getReader());
 

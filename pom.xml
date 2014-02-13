@@ -30,7 +30,7 @@
       explicitly specifying the latest version here because one we get from the parent POM
       tends to lag behind a bit
     -->
-    <maven-hpi-plugin.version>1.96</maven-hpi-plugin.version>
+    <maven-hpi-plugin.version>1.106</maven-hpi-plugin.version>
   </properties>
 
   <dependencies>

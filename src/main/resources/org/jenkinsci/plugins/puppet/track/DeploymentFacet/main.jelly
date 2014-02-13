@@ -1,9 +1,9 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <h1><img src="${resURL}/plugin/puppet/icon/32x32/puppet.png"/> Deployement</h1>
+  <h2><img style="width:32px; height:32px" src="${resURL}/plugin/puppet/icon/32x32/puppet.png"/> Deployement</h2>
   <ul>
     <j:forEach var="r" items="${it.records}">
       <li>
-        (${r.env}) ${r.host} at <tt>${r.path}</tt>
+        ${r.env}:${r.host} at <tt>${r.path}</tt> (${r.timestampString})
       </li>
     </j:forEach>
   </ul>
