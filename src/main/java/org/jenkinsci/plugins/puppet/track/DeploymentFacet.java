@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.puppet.track;
 import hudson.model.Fingerprint;
 import jenkins.model.FingerprintFacet;
 
+import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -15,5 +16,8 @@ public class DeploymentFacet extends FingerprintFacet {
         super(fingerprint, timestamp);
     }
 
-
+    public void add(ServerDeploymentRecord r) throws IOException {
+        records.add(r);
+        getFingerprint().save();
+    }
 }

@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.Collection;
 
 /**
+ * Exposed at /puppet to receive report submissions from puppet.
+ *
  * @author Kohsuke Kawaguchi
  */
 public class RootActionImpl implements RootAction {
@@ -45,6 +47,8 @@ public class RootActionImpl implements RootAction {
         // TODO: permission check
         // TODO: stapler YAML support
 
+        FingerprintMap fm = jenkins.getFingerprintMap();
+
         PuppetReport r = PuppetReport.load(req.getReader());
 
         String host = r.host;
@@ -57,25 +61,35 @@ public class RootActionImpl implements RootAction {
             // TODO: pluggability for matching resources
             if (st.resource_type.equals("File")) {
                 for (PuppetEvent ev : st.events) {
-//                    ev.getChecksum();
+                    DeploymentFacet df = getDeploymentFacet(ev.getNewChecksum());
+                    if (df!=null) {
+                        df.add(new ServerDeploymentRecord(host, env, st.title));
+                    }
+
+                    // TODO: record undeploy
                 }
             }
         }
 
-//        FingerprintMap fm = jenkins.getFingerprintMap();
-//        Fingerprint f = fm.get(checksum);
-//
-//        Collection<FingerprintFacet> facets = f.getFacets();
-//        DeploymentFacet df = findDeploymentFacet(facets);
-//        if (df==null) {
-//            df = new DeploymentFacet(f,System.currentTimeMillis());
-//            facets.add(df);
-//        }
-//
-//        df.records.add(new ServerDeploymentRecord(host, env));
-//
-//        f.save();
         return HttpResponses.ok();
+    }
+
+    /**
+     * Resolve {@link DeploymentFacet} to attach the record to, or null if there's none.
+     */
+    private DeploymentFacet getDeploymentFacet(String md5) throws IOException {
+        if (md5==null)  return null;
+
+        Fingerprint f = jenkins.getFingerprintMap().get(md5);
+        if (f==null)    return null;
+
+        Collection<FingerprintFacet> facets = f.getFacets();
+        DeploymentFacet df = findDeploymentFacet(facets);
+        if (df==null) {
+            df = new DeploymentFacet(f,System.currentTimeMillis());
+            facets.add(df);
+        }
+        return df;
     }
 
     private DeploymentFacet findDeploymentFacet(Collection<FingerprintFacet> facets) {
