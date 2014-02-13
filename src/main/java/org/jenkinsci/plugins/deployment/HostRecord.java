@@ -7,14 +7,14 @@ import hudson.Util;
  *
  * @author Kohsuke Kawaguchi
  */
-public class ServerDeploymentRecord {
+public class HostRecord {
     private final String host;
     private final String env;
     private final long timestamp;
     private final String path;
 
 
-    public ServerDeploymentRecord(String host, String env, String path) {
+    public HostRecord(String host, String env, String path) {
         this.timestamp = System.currentTimeMillis();
         this.host = host;
         this.env = env;

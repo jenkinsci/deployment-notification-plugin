@@ -8,7 +8,7 @@ import hudson.util.HttpResponses;
 import jenkins.model.FingerprintFacet;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.deployment.DeploymentFacet;
-import org.jenkinsci.plugins.deployment.ServerDeploymentRecord;
+import org.jenkinsci.plugins.deployment.HostRecord;
 import org.jenkinsci.plugins.puppet.track.report.PuppetEvent;
 import org.jenkinsci.plugins.puppet.track.report.PuppetReport;
 import org.jenkinsci.plugins.puppet.track.report.PuppetStatus;
@@ -64,7 +64,7 @@ public class RootActionImpl implements RootAction {
                 for (PuppetEvent ev : st.events) {
                     PuppetDeploymentFacet df = getDeploymentFacet(ev.getNewChecksum());
                     if (df!=null) {
-                        df.add(new ServerDeploymentRecord(host, env, st.title));
+                        df.add(new HostRecord(host, env, st.title));
                     }
 
                     // TODO: record undeploy
