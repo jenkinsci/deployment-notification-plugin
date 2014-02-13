@@ -1,0 +1,283 @@
+--- !ruby/object:Puppet::Transaction::Report
+  metrics: 
+    resources: !ruby/object:Puppet::Util::Metric
+      name: resources
+      label: Resources
+      values: 
+        - - total
+          - Total
+          - 8
+        - - skipped
+          - Skipped
+          - 0
+        - - failed
+          - Failed
+          - 0
+        - - failed_to_restart
+          - "Failed to restart"
+          - 0
+        - - restarted
+          - Restarted
+          - 0
+        - - changed
+          - Changed
+          - 1
+        - - out_of_sync
+          - "Out of sync"
+          - 1
+        - - scheduled
+          - Scheduled
+          - 0
+    time: !ruby/object:Puppet::Util::Metric
+      name: time
+      label: Time
+      values: 
+        - - schedule
+          - Schedule
+          - 0.00043203800000000004
+        - - file
+          - File
+          - 0.090653838
+        - - filebucket
+          - Filebucket
+          - 0.000130413
+        - - config_retrieval
+          - "Config retrieval"
+          - 0.238875213
+        - - total
+          - Total
+          - 0.330091502
+    changes: !ruby/object:Puppet::Util::Metric
+      name: changes
+      label: Changes
+      values: 
+        - - total
+          - Total
+          - 1
+    events: !ruby/object:Puppet::Util::Metric
+      name: events
+      label: Events
+      values: 
+        - - total
+          - Total
+          - 1
+        - - failure
+          - Failure
+          - 0
+        - - success
+          - Success
+          - 1
+  logs: 
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym info
+      tags: 
+        - info
+      message: "Applying configuration version '1392228489'"
+      source: Puppet
+      time: 2014-02-12 10:08:11.219759 -08:00
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym notice
+      tags: 
+        - notice
+        - file
+        - class
+        - foo
+        - node
+        - default
+      message: "defined content as '{md5}e4a57ad2a0bc444804d53916ee23770f'"
+      source: /Stage[main]/Foo/File[/tmp/foo.war]/ensure
+      time: 2014-02-12 10:08:11.316033 -08:00
+      file: /home/kohsuke/ws/puppet/sandbox/modules/foo/manifests/init.pp
+      line: 5
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym notice
+      tags: 
+        - notice
+      message: "Finished catalog run in 0.12 seconds"
+      source: Puppet
+      time: 2014-02-12 10:08:11.327723 -08:00
+  resource_statuses: 
+    Schedule[daily]: !ruby/object:Puppet::Resource::Status
+      resource: Schedule[daily]
+      file: 
+      line: 
+      evaluation_time: 0.00012444
+      change_count: 0
+      out_of_sync_count: 0
+      tags: 
+        - schedule
+        - daily
+      time: 2014-02-12 10:08:11.220381 -08:00
+      events: []
+      out_of_sync: false
+      changed: false
+      resource_type: Schedule
+      title: daily
+      skipped: false
+      failed: false
+      containment_path: 
+        - Schedule[daily]
+    Schedule[monthly]: !ruby/object:Puppet::Resource::Status
+      resource: Schedule[monthly]
+      file: 
+      line: 
+      evaluation_time: 5.3193e-05
+      change_count: 0
+      out_of_sync_count: 0
+      tags: 
+        - schedule
+        - monthly
+      time: 2014-02-12 10:08:11.220671 -08:00
+      events: []
+      out_of_sync: false
+      changed: false
+      resource_type: Schedule
+      title: monthly
+      skipped: false
+      failed: false
+      containment_path: 
+        - Schedule[monthly]
+    Schedule[hourly]: !ruby/object:Puppet::Resource::Status
+      resource: Schedule[hourly]
+      file: 
+      line: 
+      evaluation_time: 4.7887e-05
+      change_count: 0
+      out_of_sync_count: 0
+      tags: 
+        - schedule
+        - hourly
+      time: 2014-02-12 10:08:11.220840 -08:00
+      events: []
+      out_of_sync: false
+      changed: false
+      resource_type: Schedule
+      title: hourly
+      skipped: false
+      failed: false
+      containment_path: 
+        - Schedule[hourly]
+    Schedule[never]: !ruby/object:Puppet::Resource::Status
+      resource: Schedule[never]
+      file: 
+      line: 
+      evaluation_time: 6.3596e-05
+      change_count: 0
+      out_of_sync_count: 0
+      tags: 
+        - schedule
+        - never
+      time: 2014-02-12 10:08:11.225261 -08:00
+      events: []
+      out_of_sync: false
+      changed: false
+      resource_type: Schedule
+      title: never
+      skipped: false
+      failed: false
+      containment_path: 
+        - Schedule[never]
+    File[/tmp/foo.war]: !ruby/object:Puppet::Resource::Status
+      resource: File[/tmp/foo.war]
+      file: /home/kohsuke/ws/puppet/sandbox/modules/foo/manifests/init.pp
+      line: 5
+      evaluation_time: 0.090653838
+      change_count: 1
+      out_of_sync_count: 1
+      tags: 
+        - file
+        - class
+        - foo
+        - node
+        - default
+      time: 2014-02-12 10:08:11.225597 -08:00
+      events: 
+        - !ruby/object:Puppet::Transaction::Event
+          audited: false
+          property: ensure
+          previous_value: !ruby/sym absent
+          desired_value: !ruby/sym file
+          historical_value: 
+          message: "defined content as '{md5}e4a57ad2a0bc444804d53916ee23770f'"
+          name: !ruby/sym file_created
+          status: success
+          time: 2014-02-12 10:08:11.283052 -08:00
+      out_of_sync: true
+      changed: true
+      resource_type: File
+      title: /tmp/foo.war
+      skipped: false
+      failed: false
+      containment_path: 
+        - Stage[main]
+        - Foo
+        - File[/tmp/foo.war]
+    Filebucket[puppet]: !ruby/object:Puppet::Resource::Status
+      resource: Filebucket[puppet]
+      file: 
+      line: 
+      evaluation_time: 0.000130413
+      change_count: 0
+      out_of_sync_count: 0
+      tags: 
+        - filebucket
+        - puppet
+      time: 2014-02-12 10:08:11.316665 -08:00
+      events: []
+      out_of_sync: false
+      changed: false
+      resource_type: Filebucket
+      title: puppet
+      skipped: false
+      failed: false
+      containment_path: 
+        - Filebucket[puppet]
+    Schedule[weekly]: !ruby/object:Puppet::Resource::Status
+      resource: Schedule[weekly]
+      file: 
+      line: 
+      evaluation_time: 6.5844e-05
+      change_count: 0
+      out_of_sync_count: 0
+      tags: 
+        - schedule
+        - weekly
+      time: 2014-02-12 10:08:11.316928 -08:00
+      events: []
+      out_of_sync: false
+      changed: false
+      resource_type: Schedule
+      title: weekly
+      skipped: false
+      failed: false
+      containment_path: 
+        - Schedule[weekly]
+    Schedule[puppet]: !ruby/object:Puppet::Resource::Status
+      resource: Schedule[puppet]
+      file: 
+      line: 
+      evaluation_time: 7.7078e-05
+      change_count: 0
+      out_of_sync_count: 0
+      tags: 
+        - schedule
+        - puppet
+      time: 2014-02-12 10:08:11.317882 -08:00
+      events: []
+      out_of_sync: false
+      changed: false
+      resource_type: Schedule
+      title: puppet
+      skipped: false
+      failed: false
+      containment_path: 
+        - Schedule[puppet]
+  host: dragon.opendns.com
+  time: 2014-02-12 10:08:10.299646 -08:00
+  kind: apply
+  report_format: 4
+  puppet_version: "3.4.2"
+  configuration_version: 1392228489
+  transaction_uuid: c7d6a887-7cf2-4e52-afd1-a12857d7c4a0
+  environment: production
+  status: changed
