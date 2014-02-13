@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.puppet.track;
+package org.jenkinsci.plugins.deployment;
 
 import hudson.model.Fingerprint;
 import jenkins.model.FingerprintFacet;

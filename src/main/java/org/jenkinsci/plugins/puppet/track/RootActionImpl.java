@@ -3,11 +3,12 @@ package org.jenkinsci.plugins.puppet.track;
 import hudson.Extension;
 import hudson.Util;
 import hudson.model.Fingerprint;
-import hudson.model.FingerprintMap;
 import hudson.model.RootAction;
 import hudson.util.HttpResponses;
 import jenkins.model.FingerprintFacet;
 import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.deployment.DeploymentFacet;
+import org.jenkinsci.plugins.deployment.ServerDeploymentRecord;
 import org.jenkinsci.plugins.puppet.track.report.PuppetEvent;
 import org.jenkinsci.plugins.puppet.track.report.PuppetReport;
 import org.jenkinsci.plugins.puppet.track.report.PuppetStatus;
@@ -61,7 +62,7 @@ public class RootActionImpl implements RootAction {
             // TODO: pluggability for matching resources
             if (st.resource_type.equals("File")) {
                 for (PuppetEvent ev : st.events) {
-                    DeploymentFacet df = getDeploymentFacet(ev.getNewChecksum());
+                    PuppetDeploymentFacet df = getDeploymentFacet(ev.getNewChecksum());
                     if (df!=null) {
                         df.add(new ServerDeploymentRecord(host, env, st.title));
                     }
@@ -77,23 +78,23 @@ public class RootActionImpl implements RootAction {
     /**
      * Resolve {@link DeploymentFacet} to attach the record to, or null if there's none.
      */
-    private DeploymentFacet getDeploymentFacet(String md5) throws IOException {
+    private PuppetDeploymentFacet getDeploymentFacet(String md5) throws IOException {
         if (md5==null)  return null;
 
         Fingerprint f = jenkins.getFingerprintMap().get(md5);
         if (f==null)    return null;
 
         Collection<FingerprintFacet> facets = f.getFacets();
-        DeploymentFacet df = findDeploymentFacet(facets);
+        PuppetDeploymentFacet df = findDeploymentFacet(facets);
         if (df==null) {
-            df = new DeploymentFacet(f,System.currentTimeMillis());
+            df = new PuppetDeploymentFacet(f,System.currentTimeMillis());
             facets.add(df);
         }
         return df;
     }
 
-    private DeploymentFacet findDeploymentFacet(Collection<FingerprintFacet> facets) {
-        for (DeploymentFacet df : Util.filter(facets, DeploymentFacet.class)) {
+    private PuppetDeploymentFacet findDeploymentFacet(Collection<FingerprintFacet> facets) {
+        for (PuppetDeploymentFacet df : Util.filter(facets, PuppetDeploymentFacet.class)) {
             return df;
         }
         return null;

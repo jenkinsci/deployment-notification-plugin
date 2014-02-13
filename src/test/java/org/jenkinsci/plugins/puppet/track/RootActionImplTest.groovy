@@ -5,6 +5,7 @@ import com.gargoylesoftware.htmlunit.WebRequestSettings
 import hudson.Launcher
 import hudson.model.AbstractBuild
 import hudson.model.BuildListener
+import org.jenkinsci.plugins.deployment.DeploymentFacet
 import org.junit.Rule
 import org.junit.Test
 import org.jvnet.hudson.test.JenkinsRule
@@ -40,7 +41,7 @@ class RootActionImplTest {
         def f = j.jenkins.fingerprintMap.get("e4a57ad2a0bc444804d53916ee23770f");
 
         assert f.fileName=="foo.war"
-        DeploymentFacet df = f.facets.find { it instanceof DeploymentFacet }
+        PuppetDeploymentFacet df = f.facets.find { it instanceof PuppetDeploymentFacet }
         assert df.records.size()==1
         def rec = df.records[0]
         assert rec.env=="production"
