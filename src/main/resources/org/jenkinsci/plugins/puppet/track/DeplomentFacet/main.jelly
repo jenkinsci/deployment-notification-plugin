@@ -1,0 +1,10 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <h1><img src="${resURL}/plugin/puppet/icon/32x32/puppet.png"/> Deployement</h1>
+  <ul>
+    <j:forEach var="r" items="${it.records}">
+      <li>
+        (${r.env}) ${r.host} at <tt>${r.path}</tt>
+      </li>
+    </j:forEach>
+  </ul>
+</j:jelly>
