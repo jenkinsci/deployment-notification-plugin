@@ -64,7 +64,10 @@ public class RootActionImpl implements RootAction {
                 for (PuppetEvent ev : st.events) {
                     PuppetDeploymentFacet df = getDeploymentFacet(ev.getNewChecksum());
                     if (df!=null) {
-                        df.add(new HostRecord(host, env, st.title));
+                        String old = ev.getOldChecksum();
+                        if (old!=null && jenkins.getFingerprintMap().get(old)==null)
+                            old = null; // unknown fingerprint
+                        df.add(new HostRecord(host, env, st.title, old));
                     }
 
                     // TODO: record undeploy

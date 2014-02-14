@@ -272,7 +272,7 @@
       failed: false
       containment_path: 
         - Schedule[puppet]
-  host: dragon.opendns.com
+  host: dragon
   time: 2014-02-12 10:08:10.299646 -08:00
   kind: apply
   report_format: 4

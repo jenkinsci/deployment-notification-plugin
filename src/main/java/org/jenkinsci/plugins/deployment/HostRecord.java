@@ -1,6 +1,10 @@
 package org.jenkinsci.plugins.deployment;
 
 import hudson.Util;
+import hudson.model.Fingerprint;
+import jenkins.model.Jenkins;
+
+import java.io.IOException;
 
 /**
  * Record of the deployment.
@@ -12,13 +16,19 @@ public class HostRecord {
     private final String env;
     private final long timestamp;
     private final String path;
+    /**
+     * Fingerprint of the previous file that this deployment has replaced.
+     * Can be null.
+     */
+    private final String replaces;
 
 
-    public HostRecord(String host, String env, String path) {
+    public HostRecord(String host, String env, String path, String replaces) {
         this.timestamp = System.currentTimeMillis();
         this.host = host;
         this.env = env;
         this.path = path;
+        this.replaces = replaces;
     }
 
     public String getHost() {
@@ -35,6 +45,14 @@ public class HostRecord {
 
     public String getPath() {
         return path;
+    }
+
+    public String getReplaces() {
+        return replaces;
+    }
+
+    public Fingerprint getReplacesFingerprint() throws IOException {
+        return replaces!=null ? Jenkins.getInstance().getFingerprintMap().get(replaces) : null;
     }
 
     /**

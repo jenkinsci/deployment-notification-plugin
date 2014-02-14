@@ -14,9 +14,9 @@ class LoaderTest extends Assert {
      */
     @Test
     void loadReport() {
-        def r = PuppetReport.load(this.class.getResourceAsStream("http-reporter.yaml"))
+        def r = PuppetReport.load(this.class.getResourceAsStream("report1.yaml"))
         assert r.environment=="production"
-        assert r.host=="dragon.opendns.com"
+        assert r.host=="dragon"
 
         def s = r.resource_statuses["File[/tmp/foo.war]"];
         assert s.changed
