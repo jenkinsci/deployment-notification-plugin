@@ -7,7 +7,7 @@ import jenkins.model.Jenkins;
 import java.io.IOException;
 
 /**
- * Record of the deployment.
+ * Record of the deployment per host.
  *
  * @author Kohsuke Kawaguchi
  */
