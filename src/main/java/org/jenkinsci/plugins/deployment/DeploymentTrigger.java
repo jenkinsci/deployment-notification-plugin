@@ -5,15 +5,18 @@ import hudson.model.AbstractProject;
 import hudson.model.BuildableItem;
 import hudson.model.Fingerprint;
 import hudson.model.Fingerprint.RangeSet;
+import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.triggers.Trigger;
+import hudson.triggers.TriggerDescriptor;
 import jenkins.model.FingerprintFacet;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -113,7 +116,26 @@ public class DeploymentTrigger extends Trigger<BuildableItem> {
             });
         }
 
-        public static final ExecutorService POOL = new ThreadPoolExecutor(0, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+        /**
+         * Waits until all the pending deployment facets are processed.
+         */
+        public void sync() throws InterruptedException {
+            try {
+                POOL.submit(new Runnable() {
+                    public void run() {
+                        // no-op
+                    }
+                }).get();
+            } catch (ExecutionException e) {
+                throw (InterruptedException)new InterruptedException().initCause(e);
+            }
+        }
+
+        public final ExecutorService POOL = new ThreadPoolExecutor(0, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+    }
+
+    public static void sync() throws InterruptedException {
+        DeploymentFacetListener.all().get(ListenerImpl.class).sync();
     }
 
     /**
@@ -133,6 +155,19 @@ public class DeploymentTrigger extends Trigger<BuildableItem> {
             }
             getFingerprint().save();
             return true;
+        }
+    }
+
+    @Extension
+    public static class DescriptorImpl extends TriggerDescriptor {
+        @Override
+        public boolean isApplicable(Item item) {
+            return item instanceof BuildableItem;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return "When configuration management tools finish deploying artifacts to server";
         }
     }
 
