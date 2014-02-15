@@ -1,7 +1,6 @@
 package org.jenkinsci.plugins.deployment;
 
 import hudson.Extension;
-import hudson.Util;
 import hudson.model.AbstractProject;
 import hudson.model.BuildableItem;
 import hudson.model.Fingerprint;
@@ -27,33 +26,28 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * {@link Trigger} that fires when artifacts are deployed
+ * {@link Trigger} that fires when artifacts are deployed.
+ *
  * @author Kohsuke Kawaguchi
  */
 public class DeploymentTrigger extends Trigger<AbstractProject> {
     private final String upstreamJob;
-    private final String env;
-    private final int threshold;
+    private final Condition cond;
 
     private transient Job upstream;
 
     @DataBoundConstructor
-    public DeploymentTrigger(String upstreamJob, String env, int threshold) {
+    public DeploymentTrigger(String upstreamJob, Condition cond) {
         this.upstreamJob = upstreamJob;
-        this.env = Util.fixEmpty(env);
-        this.threshold = threshold;
+        this.cond = cond;
     }
 
     public String getUpstreamJob() {
         return upstreamJob;
     }
 
-    public String getEnv() {
-        return env;
-    }
-
-    public int getThreshold() {
-        return threshold;
+    public Condition getCond() {
+        return cond;
     }
 
     @Override
@@ -64,16 +58,21 @@ public class DeploymentTrigger extends Trigger<AbstractProject> {
 
     public void checkAndFire(DeploymentFacet facet) {
         try {
-            int n = firesWith(facet);
-            if (n>0) {
+            RangeSet r = cond.calcMatchingBuildNumberOf(upstream, facet);
+            if (!r.isEmpty()) {
                 if (findTriggeredRecord(facet.getFingerprint()).add(this)) {
-                    Run b = upstream.getBuildByNumber(n);
-                    if (b!=null) {
-                        // pass all the current parameters if we can
-                        ParametersAction action = b.getAction(ParametersAction.class);
-                        job.scheduleBuild(job.getQuietPeriod(),new UpstreamDeploymentCause(b),action);
-                    } else
-                        job.scheduleBuild();    // TODO: expose a version that takes name and build number
+                    for (Integer n : r.listNumbers()) {
+                        Run b = upstream.getBuildByNumber(n);
+                        if (b!=null) {
+                            // pass all the current parameters if we can
+                            ParametersAction action = b.getAction(ParametersAction.class);
+                            job.scheduleBuild(job.getQuietPeriod(), new UpstreamDeploymentCause(b), action);
+                            return;
+                        }
+                    }
+
+                    // didn't find any matching build, so just trigger it but without the cause to link to the upstream
+                    job.scheduleBuild();    // TODO: expose a version that takes name and build number
                 }
             }
         } catch (IOException e) {
@@ -90,28 +89,6 @@ public class DeploymentTrigger extends Trigger<AbstractProject> {
         Triggered t = new Triggered(f, System.currentTimeMillis());
         f.getFacets().add(t);
         return t;
-    }
-
-    private int firesWith(DeploymentFacet facet) {
-        Fingerprint f = facet.getFingerprint();
-
-        if (upstream==null)     return 0;
-        RangeSet r = f.getRangeSet(upstream);
-        if (r.isEmpty())        return 0;
-
-        // at this point, we verified that the fingerprint touches the project we care about
-
-        // count the deployment
-        int cnt = 0;
-        for (HostRecord hr : facet.records) {
-            if (env==null || env.equals(hr.getEnv()))
-                cnt++;
-            if (cnt>=threshold)
-                return r.min();
-        }
-
-        // not enough deployments have happened yet
-        return 0;
     }
 
     /**
