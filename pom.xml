@@ -6,7 +6,7 @@
     <version>1.509.2</version><!-- which version of Jenkins is this plugin built against? -->
   </parent>
 
-  <artifactId>puppet</artifactId>
+  <artifactId>deployment-notification</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
