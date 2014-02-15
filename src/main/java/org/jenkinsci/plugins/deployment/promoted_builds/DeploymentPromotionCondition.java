@@ -15,7 +15,6 @@ import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.deployment.Condition;
 import org.jenkinsci.plugins.deployment.DeploymentFacet;
 import org.jenkinsci.plugins.deployment.DeploymentFacetListener;
-import org.jenkinsci.plugins.deployment.DeploymentTrigger;
 import org.jenkinsci.plugins.deployment.HostRecord;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -59,10 +58,6 @@ public class DeploymentPromotionCondition extends PromotionCondition {
 
     @Extension
     public static final class DescriptorImpl extends PromotionConditionDescriptor {
-        public DescriptorImpl() {
-            addHelpFileRedirect("cond", DeploymentTrigger.class, "cond");
-        }
-
         public boolean isApplicable(AbstractProject<?,?> item) {
             return true;
         }
