@@ -1,0 +1,8 @@
+<div>
+    Specify the job whose artifacts you'd like to watch for triggering this job.
+
+    <p>
+    The specified job must record fingerprints of the artifacts Chef/Puppet/etc deploys, when this trigger fires,
+    the build to be started will see the corresponding build of the upstream job as the cause of the build, and
+    receives all the parameters given to that upstream build.
+</div>

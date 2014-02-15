@@ -1,0 +1,32 @@
+<div>
+    Triggers a build when artifacts from another project is deployed to servers via configuration management tools
+    like Chef/Puppet/etc. For this feature to work, you must also install a plugin that's specific to the configuration
+    management tool you are using, such as the puppet plugin.
+
+    <p>
+    For example, you can use this to run post-deployment smoke tests, or you can tickle your load balancer to shift
+    traffic to newer servers.
+
+    <p>
+    This feature critically depends on <a href="https://wiki.jenkins-ci.org/display/JENKINS/Fingerprint">fingerprints</a>
+    to function properly.
+
+    <p>
+    Imagine you are deploying foo.rpm file with Puppet. Here is the sequence of events until this trigger fires:
+
+    <ol>
+    <li>You have job U that records the fingerprint of foo.rpm. This job is most typically a job that
+        produces foo.rpm, but it could be any job so long as it records the fingerprint. For example,
+        it might be a job that copies foo.rpm into your RPM repository.
+    <li>You have job D that has a deployment trigger, which specifies U as the upstream.
+    <li>Job U build #15 (or whatever) runs, a specific fingerprint (say b1946ac9) is recorded for this version of foo.rpm
+    <li>At some point outside Jenkins, Puppet runs and chooses to lay down this foo.rpm. Your Puppet manifests
+        do this by using specific resource types that Jenkins understands.
+    <li>You configure Puppet to send the report back to Jenkins. Jenkins will analyze the report, pick up
+        the details sent from the specific resource types, and learn that a file with fingerprint b1946ac9 was deployed.
+    <li>Jenkins compares existing fingerprint records and find out that this foo.rpm came from U #15.
+    <li>Jenkins notices that job D wants to run if an artifact from U is deployed, and this deployment satisfies that condition
+    <li>Job D gets scheduled, with U #15 as the upstream.
+    </ol>
+
+</div>
