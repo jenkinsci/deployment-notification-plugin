@@ -26,7 +26,7 @@ class RootActionImplTest {
      * Exercises the whole flow from producing binaries, deploying them via puppet, then use that to t rigger tasks.
      */
     @Test
-    void submission() {
+    void wholeSequence() {
         j.jenkins.crumbIssuer=null;
 
         // run two builds to produce two fingerprints
