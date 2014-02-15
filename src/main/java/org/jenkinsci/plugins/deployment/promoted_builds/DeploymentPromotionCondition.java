@@ -35,6 +35,10 @@ public class DeploymentPromotionCondition extends PromotionCondition {
         this.cond = cond;
     }
 
+    public Condition getCond() {
+        return cond;
+    }
+
     @Override
     public PromotionBadge isMet(PromotionProcess promotionProcess, AbstractBuild<?,?> build) {
         for (Fingerprint f : build.getBuildFingerprints()) {
