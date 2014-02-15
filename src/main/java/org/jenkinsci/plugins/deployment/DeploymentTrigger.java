@@ -1,12 +1,14 @@
 package org.jenkinsci.plugins.deployment;
 
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.AbstractProject;
 import hudson.model.BuildableItem;
 import hudson.model.Fingerprint;
 import hudson.model.Fingerprint.RangeSet;
 import hudson.model.Item;
 import hudson.model.Job;
+import hudson.model.ParametersAction;
 import hudson.model.Run;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
@@ -25,9 +27,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * {@link Trigger} that fires when artifacts are deployed
  * @author Kohsuke Kawaguchi
  */
-public class DeploymentTrigger extends Trigger<BuildableItem> {
+public class DeploymentTrigger extends Trigger<AbstractProject> {
     private final String upstreamJob;
     private final String env;
     private final int threshold;
@@ -37,12 +40,24 @@ public class DeploymentTrigger extends Trigger<BuildableItem> {
     @DataBoundConstructor
     public DeploymentTrigger(String upstreamJob, String env, int threshold) {
         this.upstreamJob = upstreamJob;
-        this.env = env;
+        this.env = Util.fixEmpty(env);
         this.threshold = threshold;
     }
 
+    public String getUpstreamJob() {
+        return upstreamJob;
+    }
+
+    public String getEnv() {
+        return env;
+    }
+
+    public int getThreshold() {
+        return threshold;
+    }
+
     @Override
-    public void start(BuildableItem project, boolean newInstance) {
+    public void start(AbstractProject project, boolean newInstance) {
         super.start(project, newInstance);
         upstream = Jenkins.getInstance().getItem(upstreamJob, job, Job.class);
     }
@@ -53,9 +68,11 @@ public class DeploymentTrigger extends Trigger<BuildableItem> {
             if (n>0) {
                 if (findTriggeredRecord(facet.getFingerprint()).add(this)) {
                     Run b = upstream.getBuildByNumber(n);
-                    if (b!=null)
-                        job.scheduleBuild(new UpstreamDeploymentCause(b));
-                    else
+                    if (b!=null) {
+                        // pass all the current parameters if we can
+                        ParametersAction action = b.getAction(ParametersAction.class);
+                        job.scheduleBuild(job.getQuietPeriod(),new UpstreamDeploymentCause(b),action);
+                    } else
                         job.scheduleBuild();    // TODO: expose a version that takes name and build number
                 }
             }
@@ -87,7 +104,7 @@ public class DeploymentTrigger extends Trigger<BuildableItem> {
         // count the deployment
         int cnt = 0;
         for (HostRecord hr : facet.records) {
-            if (env.equals(hr.getEnv()))
+            if (env==null || env.equals(hr.getEnv()))
                 cnt++;
             if (cnt>=threshold)
                 return r.min();
