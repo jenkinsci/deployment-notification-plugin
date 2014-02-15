@@ -3,5 +3,5 @@
   <f:entry title="${%Upstream Job}" field="upstreamJob">
     <f:textbox />
   </f:entry>
-  <f:dropdownDescriptorSelector field="cond" title="${%Condition"/>
+  <f:dropdownDescriptorSelector field="cond" title="${%Condition}"/>
 </j:jelly>

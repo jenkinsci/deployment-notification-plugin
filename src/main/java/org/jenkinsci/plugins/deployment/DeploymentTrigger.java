@@ -2,10 +2,12 @@ package org.jenkinsci.plugins.deployment;
 
 import hudson.Extension;
 import hudson.model.AbstractProject;
+import hudson.model.AutoCompletionCandidates;
 import hudson.model.BuildableItem;
 import hudson.model.Fingerprint;
 import hudson.model.Fingerprint.RangeSet;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.ParametersAction;
 import hudson.model.Run;
@@ -13,7 +15,9 @@ import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
 import jenkins.model.FingerprintFacet;
 import jenkins.model.Jenkins;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -162,6 +166,10 @@ public class DeploymentTrigger extends Trigger<AbstractProject> {
         @Override
         public String getDisplayName() {
             return "When configuration management tools finish deploying artifacts to server";
+        }
+
+        public AutoCompletionCandidates doAutoCompleteUpstreamJob(@QueryParameter String value, @AncestorInPath Item self, @AncestorInPath ItemGroup container) {
+            return AutoCompletionCandidates.ofJobNames(Job.class, value, self,  container);
         }
     }
 
