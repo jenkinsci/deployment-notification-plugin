@@ -1,0 +1,13 @@
+- promoted builds plugin integration
+  -> as a promotion criteria
+
+- trigger integration
+  "when artifacts of 'foo' gets deployed to N machines..."
+
+- build flow integration
+  primitive to wait for the deployment in a spin loop
+
+- pipeline integration
+
+
+- support additional puppet resource types, even a custom task for tracking

@@ -1,0 +1,52 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <h2><img style="width:32px; height:32px" src="${resURL}/plugin/puppet/icon/32x32/puppet.png"/> Deployement</h2>
+  <table class="sortable bigtable pane">
+    <thead style="text-align:left">
+      <tr>
+        <th>${%Environment}</th>
+        <th>${%Host}</th>
+        <th>${%Path}</th>
+        <th tooltip="${%How long ago was Jenkins informed that this deployment had happened?}">
+          ${%Deployed When}
+        </th>
+        <th tooltip="${%Which file was previously there when this deployment happened?}">
+          ${%Previous Version}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <j:forEach var="r" items="${it.records}">
+        <tr>
+          <td>${r.env}</td>
+          <td>${r.host}</td>
+          <td>${r.path}</td>
+          <td data="${r.timestamp}">${r.timestampString}</td>
+          <td>
+            <j:choose>
+              <j:set var="rf" value="${r.replacesFingerprint}"/>
+              <j:when test="${rf!=null}">
+                <j:choose>
+                  <j:when test="${rf.original==null}">
+                    <a href="${rootURL}/fingerprint/${r.replaces}">
+                      ${r.replaces}
+                    </a>
+                  </j:when>
+                  <j:otherwise>
+                    <t:buildLink job="${rf.original.job}" number="${rf.original.number}" jobName="${rf.original.name}"/>
+                    <st:nbsp />
+                    <a href="${rootURL}/fingerprint/${r.replaces}">
+                      <img src="${imagesURL}/16x16/fingerprint.png" alt="fingerprint" height="16" width="16" />
+                    </a>
+                  </j:otherwise>
+                </j:choose>
+              </j:when>
+              <j:otherwise>
+                -
+              </j:otherwise>
+            </j:choose>
+          </td>
+        </tr>
+      </j:forEach>
+    </tbody>
+  </table>
+</j:jelly>
