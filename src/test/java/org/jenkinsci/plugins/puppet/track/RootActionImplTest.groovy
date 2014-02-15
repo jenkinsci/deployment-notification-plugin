@@ -86,7 +86,11 @@ class RootActionImplTest {
         assert rsp.statusCode == 200;
 
         DeploymentTrigger.sync();   // wait until all the jobs that should be triggered are triggered
-        while (j.jenkins.queue.items.length>0) // wait until queued builds are started
+        flushQueue()
+    }
+
+    private void flushQueue() {
+        while (j.jenkins.queue.items.length > 0) // wait until queued builds are started
             Thread.sleep(100);
     }
 

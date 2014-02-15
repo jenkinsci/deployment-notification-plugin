@@ -45,7 +45,7 @@ public class DeploymentPromotionCondition extends PromotionCondition {
             RangeSet r = cond.calcMatchingBuildNumberOf(build.getProject(), f);
             if (r.includes(build.getNumber())) {
                 // promoted!
-                return new Badge();
+                return new Badge(f.getDisplayName(),f.getHashString());
             }
         }
 
@@ -54,6 +54,21 @@ public class DeploymentPromotionCondition extends PromotionCondition {
     }
 
     public static final class Badge extends PromotionBadge {
+        private final String displayName;
+        private final String md5;
+
+        public Badge(String displayName, String md5) {
+            this.displayName = displayName;
+            this.md5 = md5;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public String getMd5() {
+            return md5;
+        }
     }
 
     @Extension
