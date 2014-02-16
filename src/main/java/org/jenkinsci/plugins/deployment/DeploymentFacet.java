@@ -19,6 +19,10 @@ public class DeploymentFacet<T extends HostRecord> extends FingerprintFacet {
     }
 
     public void add(T r) throws IOException {
+        for (T e : records) {
+            if (e.equals(r))
+                return;
+        }
         records.add(r);
         getFingerprint().save();
         for (DeploymentFacetListener l : DeploymentFacetListener.all()) {
