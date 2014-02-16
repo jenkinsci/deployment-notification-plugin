@@ -1,0 +1,33 @@
+<!--
+  Renders a HostRecord as table row
+-->
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <td>${it.env}</td>
+  <td>${it.host}</td>
+  <td>${it.path}</td>
+  <td data="${it.timestamp}">${it.timestampString}</td>
+  <td>
+    <j:choose>
+      <j:set var="rf" value="${it.replacesFingerprint}"/>
+      <j:when test="${rf!=null}">
+        <j:choose>
+          <j:when test="${rf.original==null}">
+            <a href="${rootURL}/fingerprint/${it.replaces}">
+              ${it.replaces}
+            </a>
+          </j:when>
+          <j:otherwise>
+            <t:buildLink job="${rf.original.job}" number="${rf.original.number}" jobName="${rf.original.name}"/>
+            <st:nbsp />
+            <a href="${rootURL}/fingerprint/${it.replaces}">
+              <img src="${imagesURL}/16x16/fingerprint.png" alt="fingerprint" height="16" width="16" />
+            </a>
+          </j:otherwise>
+        </j:choose>
+      </j:when>
+      <j:otherwise>
+        -
+      </j:otherwise>
+    </j:choose>
+  </td>
+</j:jelly>

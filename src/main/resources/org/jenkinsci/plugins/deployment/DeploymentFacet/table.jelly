@@ -1,0 +1,20 @@
+<!--
+  Renders all HostRecords as a table.
+-->
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <table class="sortable bigtable pane">
+    <thead style="text-align:left">
+      <tr>
+        <st:include page="thead.jelly" />
+      </tr>
+    </thead>
+    <tbody>
+      <j:forEach var="r" items="${it.records}">
+        <tr>
+          <st:include page="row.jelly" it="${r}" />
+        </tr>
+      </j:forEach>
+    </tbody>
+  </table>
+
+</j:jelly>

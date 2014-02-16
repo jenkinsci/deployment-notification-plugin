@@ -1,0 +1,17 @@
+<!--
+  Render table headers for HostRecords.
+
+  If your subtype of DeploymentFacet subtypes HostRecord and adds additional information,
+  you should override this view and adds additional columns.
+-->
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <th>${%Environment}</th>
+  <th>${%Host}</th>
+  <th>${%Path}</th>
+  <th tooltip="${%How long ago was Jenkins informed that this deployment had happened?}">
+    ${%Deployed When}
+  </th>
+  <th tooltip="${%Which file was previously there when this deployment happened?}">
+    ${%Previous Version}
+  </th>
+</j:jelly>
