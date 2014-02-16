@@ -16,7 +16,7 @@ public abstract class Condition extends AbstractDescribableImpl<Condition> imple
      * of the given {@link Job}. If so, return the build number of the job that matches,
      * otherwise return negative number to indicate no match.
      */
-    public abstract RangeSet calcMatchingBuildNumberOf(Job upstream, DeploymentFacet facet);
+    public abstract RangeSet calcMatchingBuildNumberOf(Job upstream, DeploymentFacet<?> facet);
 
     public RangeSet calcMatchingBuildNumberOf(Job upstream, Fingerprint f) {
         for (FingerprintFacet ff : f.getFacets()) {

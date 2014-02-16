@@ -11,6 +11,8 @@ import org.jenkinsci.plugins.deployment.DeploymentFacet;
 import org.jenkinsci.plugins.deployment.HostRecord;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -35,7 +37,7 @@ public class ThresholdCondition extends Condition {
     }
 
     @Override
-    public RangeSet calcMatchingBuildNumberOf(Job upstream, DeploymentFacet facet) {
+    public RangeSet calcMatchingBuildNumberOf(Job upstream, DeploymentFacet<?> facet) {
         Fingerprint f = facet.getFingerprint();
 
         if (upstream==null)     return new RangeSet();
@@ -45,11 +47,11 @@ public class ThresholdCondition extends Condition {
         // at this point, we verified that the fingerprint touches the project we care about
 
         // count the deployment
-        int cnt = 0;
+        Set<String> hosts = new HashSet<String>();
         for (HostRecord hr : facet.records) {
             if (env==null || env.equals(hr.getEnv()))
-                cnt++;
-            if (cnt>=threshold)
+                hosts.add(hr.getHost());
+            if (hosts.size()>=threshold)
                 return r;
         }
 
