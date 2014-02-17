@@ -1,6 +1,10 @@
 package org.jenkinsci.plugins.deployment;
 
+import hudson.init.Initializer;
 import hudson.model.Fingerprint;
+import hudson.security.Permission;
+import hudson.security.PermissionGroup;
+import hudson.security.PermissionScope;
 import jenkins.model.FingerprintFacet;
 
 import java.io.IOException;
@@ -28,5 +32,14 @@ public class DeploymentFacet<T extends HostRecord> extends FingerprintFacet {
         for (DeploymentFacetListener l : DeploymentFacetListener.all()) {
             l.onChange(this,r);
         }
+    }
+
+    public static final PermissionGroup PERMISSIONS = new PermissionGroup(DeploymentFacet.class, Messages._DeploymentFacet_Permissions_Title());
+
+    public static final Permission RECORD = new Permission(PERMISSIONS,"Record", Messages._DeploymentFacet_RecordPermission_Description(), Permission.UPDATE, PermissionScope.JENKINS);
+
+    @Initializer
+    public static void recordPermission() {
+        PERMISSIONS.toString(); // force initialization
     }
 }
