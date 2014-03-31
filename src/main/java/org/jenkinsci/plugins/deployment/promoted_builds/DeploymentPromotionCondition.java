@@ -71,7 +71,7 @@ public class DeploymentPromotionCondition extends PromotionCondition {
         }
     }
 
-    @Extension
+    @Extension(optional=true)
     public static final class DescriptorImpl extends PromotionConditionDescriptor {
         public boolean isApplicable(AbstractProject<?,?> item) {
             return true;
