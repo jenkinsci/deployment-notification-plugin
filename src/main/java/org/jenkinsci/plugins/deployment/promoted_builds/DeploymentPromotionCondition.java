@@ -85,8 +85,11 @@ public class DeploymentPromotionCondition extends PromotionCondition {
     /**
      * Whenever a new deployment record arrives, check if we need to trigger any jobs.
      */
-    @Extension
+    @Extension(optional=true)
     public static class ListenerImpl extends DeploymentFacetListener {
+        // prevent this extension point from getting loaded if promoted_builds plugin is not installed
+        private static final Class test = JobPropertyImpl.class;
+
         @Override
         public void onChange(final DeploymentFacet facet, HostRecord newRecord) {
             for (String jobFullName : facet.getFingerprint().getJobs()) {
