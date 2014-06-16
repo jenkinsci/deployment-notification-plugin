@@ -38,7 +38,7 @@ public class DeploymentTrigger extends Trigger<AbstractProject> {
     private final String upstreamJob;
     private final Condition cond;
 
-    private transient Job upstream;
+    private transient volatile Job upstream;
 
     @DataBoundConstructor
     public DeploymentTrigger(String upstreamJob, Condition cond) {
@@ -54,14 +54,11 @@ public class DeploymentTrigger extends Trigger<AbstractProject> {
         return cond;
     }
 
-    @Override
-    public void start(AbstractProject project, boolean newInstance) {
-        super.start(project, newInstance);
-        upstream = Jenkins.getInstance().getItem(upstreamJob, job, Job.class);
-    }
-
     public void checkAndFire(DeploymentFacet facet) {
         try {
+            if (upstream==null)
+                upstream = Jenkins.getInstance().getItem(upstreamJob, job, Job.class);
+
             RangeSet r = cond.calcMatchingBuildNumberOf(upstream, facet);
             if (!r.isEmpty()) {
                 if (findTriggeredRecord(facet.getFingerprint()).add(this)) {
