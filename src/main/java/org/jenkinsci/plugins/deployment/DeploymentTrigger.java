@@ -19,8 +19,12 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
+import javax.annotation.CheckForNull;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -54,12 +58,18 @@ public class DeploymentTrigger extends Trigger<AbstractProject> {
         return cond;
     }
 
+    @Deprecated
     public void checkAndFire(DeploymentFacet facet) {
+        checkAndFire(facet, null);
+    }
+
+    public void checkAndFire(DeploymentFacet facet, @CheckForNull HostRecord hostRecord) {
         try {
             if (upstream==null)
                 upstream = Jenkins.getInstance().getItem(upstreamJob, job, Job.class);
 
             RangeSet r = cond.calcMatchingBuildNumberOf(upstream, facet);
+
             if (!r.isEmpty()) {
                 if (findTriggeredRecord(facet.getFingerprint()).add(this)) {
                     for (Integer n : r.listNumbers()) {
@@ -67,7 +77,15 @@ public class DeploymentTrigger extends Trigger<AbstractProject> {
                         if (b!=null) {
                             // pass all the current parameters if we can
                             ParametersAction action = b.getAction(ParametersAction.class);
-                            job.scheduleBuild(job.getQuietPeriod(), new UpstreamDeploymentCause(b), action);
+                            if (hostRecord != null) {
+                                List<HostRecord> listHostRecord = new ArrayList();
+                                Iterator iterator = facet.records.iterator();
+                                while(iterator.hasNext()) {
+                                    listHostRecord.add((HostRecord) iterator.next());
+                                }
+                                HostRecords hostrecords = new HostRecords(listHostRecord);
+                                job.scheduleBuild(job.getQuietPeriod(), new UpstreamDeploymentCause(b), action, hostrecords);
+                            }
                             return;
                         }
                     }
@@ -98,13 +116,13 @@ public class DeploymentTrigger extends Trigger<AbstractProject> {
     @Extension
     public static class ListenerImpl extends DeploymentFacetListener {
         @Override
-        public void onChange(final DeploymentFacet facet, HostRecord newRecord) {
+        public void onChange(final DeploymentFacet facet, final HostRecord newRecord) {
             POOL.submit(new Runnable() {
                 public void run() {
                     for (AbstractProject<?,?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
                         DeploymentTrigger t = p.getTrigger(DeploymentTrigger.class);
                         if (t!=null) {
-                            t.checkAndFire(facet);
+                            t.checkAndFire(facet, newRecord);
                         }
                     }
                 }
