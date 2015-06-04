@@ -65,7 +65,7 @@ public class HostRecords extends InvisibleAction implements EnvironmentContribut
             deploymentPath.add(hostRecord.getPath());
             deploymentTimeStamp.add(hostRecord.getTimestampString());
         }
-        envVars.put("DEPLOYMENT_ENV", StringUtils.join(deploymentHost, ","));
+        envVars.put("DEPLOYMENT_ENV", StringUtils.join(deploymentEnv, ","));
         envVars.put("DEPLOYMENT_HOST", StringUtils.join(deploymentHost, ","));
         envVars.put("DEPLOYMENT_PATH", StringUtils.join(deploymentPath, ","));
         envVars.put("DEPLOYMENT_TIMESTAMP", StringUtils.join(deploymentTimeStamp, ","));
