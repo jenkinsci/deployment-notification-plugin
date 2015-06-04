@@ -52,6 +52,7 @@ public class HostRecords extends InvisibleAction implements EnvironmentContribut
     }
 
     public void buildEnvVars(AbstractBuild<?, ?> abstractBuild, EnvVars envVars) {
+        @Nonnull final List<String> deploymentEnv = new ArrayList();
         @Nonnull final List<String> deploymentHost = new ArrayList();
         @Nonnull final List<String> deploymentPath = new ArrayList();
         @Nonnull final List<String> deploymentTimeStamp = new ArrayList();
@@ -59,10 +60,12 @@ public class HostRecords extends InvisibleAction implements EnvironmentContribut
         Collection<HostRecord> hostRecords = getHostrecords();
 
         for (HostRecord hostRecord : hostRecords) {
+            deploymentEnv.add(hostRecord.getEnv());
             deploymentHost.add(hostRecord.getHost());
             deploymentPath.add(hostRecord.getPath());
             deploymentTimeStamp.add(hostRecord.getTimestampString());
         }
+        envVars.put("DEPLOYMENT_ENV", StringUtils.join(deploymentHost, ","));
         envVars.put("DEPLOYMENT_HOST", StringUtils.join(deploymentHost, ","));
         envVars.put("DEPLOYMENT_PATH", StringUtils.join(deploymentPath, ","));
         envVars.put("DEPLOYMENT_TIMESTAMP", StringUtils.join(deploymentTimeStamp, ","));
