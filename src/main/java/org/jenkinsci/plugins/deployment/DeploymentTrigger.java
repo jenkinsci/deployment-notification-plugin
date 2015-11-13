@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.deployment;
 import hudson.Extension;
 import hudson.model.AutoCompletionCandidates;
 import hudson.model.BuildableItem;
+import hudson.model.CauseAction;
 import hudson.model.Fingerprint;
 import hudson.model.Fingerprint.RangeSet;
 import hudson.model.Item;
@@ -72,8 +73,7 @@ public class DeploymentTrigger extends Trigger<Job> {
                         Run b = upstream.getBuildByNumber(n);
                         if (b!=null) {
                             // pass all the current parameters if we can
-                            ParametersAction action = b.getAction(ParametersAction.class);
-                            parameterizedJobMixIn.scheduleBuild2(5, action);
+                            parameterizedJobMixIn.scheduleBuild(new UpstreamDeploymentCause(b));
                             return;
                         }
                     }
