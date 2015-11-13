@@ -73,7 +73,7 @@ public class DeploymentTrigger extends Trigger<Job> {
                         if (b!=null) {
                             // pass all the current parameters if we can
                             ParametersAction action = b.getAction(ParametersAction.class);
-                            parameterizedJobMixIn.scheduleBuild2(5, action);
+                            parameterizedJobMixIn.scheduleBuild2(action);
                             return;
                         }
                     }
@@ -107,6 +107,7 @@ public class DeploymentTrigger extends Trigger<Job> {
         public void onChange(final DeploymentFacet facet, HostRecord newRecord) {
             POOL.submit(new Runnable() {
                 public void run() {
+                    //TODO - 1.621: use getTrigger(Job<?,?> job, Class<T> clazz)
                     for (Job<?,?> job : Jenkins.getInstance().getAllItems(Job.class)) {
                         if (job instanceof ParameterizedJobMixIn.ParameterizedJob) {
                             ParameterizedJobMixIn.ParameterizedJob pJob = (ParameterizedJobMixIn.ParameterizedJob) job;
