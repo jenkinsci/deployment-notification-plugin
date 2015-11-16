@@ -60,6 +60,7 @@ public class DeploymentTrigger extends Trigger<Job> {
             if (upstream==null)
                 upstream = Jenkins.getInstance().getItem(upstreamJob, job, Job.class);
 
+            //TODO: Jenkins 1.621+ can avoid to implement an inner inline class in code directly calling ParameterizedJobMixIn.scheduleBuild2
             ParameterizedJobMixIn parameterizedJobMixIn = new ParameterizedJobMixIn() {
                 @Override protected Job asJob() {
                     return job;
@@ -73,7 +74,8 @@ public class DeploymentTrigger extends Trigger<Job> {
                         Run b = upstream.getBuildByNumber(n);
                         if (b!=null) {
                             // pass all the current parameters if we can
-                            parameterizedJobMixIn.scheduleBuild(new UpstreamDeploymentCause(b));
+                            ParametersAction action = b.getAction(ParametersAction.class);
+                            parameterizedJobMixIn.scheduleBuild2(5, action);
                             return;
                         }
                     }
@@ -108,14 +110,11 @@ public class DeploymentTrigger extends Trigger<Job> {
             POOL.submit(new Runnable() {
                 public void run() {
                     //TODO - 1.621: use getTrigger(Job<?,?> job, Class<T> clazz)
-                    for (Job<?,?> job : Jenkins.getInstance().getAllItems(Job.class)) {
-                        if (job instanceof ParameterizedJobMixIn.ParameterizedJob) {
-                            ParameterizedJobMixIn.ParameterizedJob pJob = (ParameterizedJobMixIn.ParameterizedJob) job;
-                            for (Trigger trigger : pJob.getTriggers().values()) {
-                                if (trigger instanceof DeploymentTrigger) {
-                                    DeploymentTrigger deploymentTrigger = (DeploymentTrigger) trigger;
-                                    deploymentTrigger.checkAndFire(facet);
-                                }
+                    for (ParameterizedJobMixIn.ParameterizedJob parameterizedJob : Jenkins.getInstance().getAllItems(ParameterizedJobMixIn.ParameterizedJob.class)) {
+                        for (Trigger trigger : parameterizedJob.getTriggers().values()) {
+                            if (trigger instanceof DeploymentTrigger) {
+                                DeploymentTrigger deploymentTrigger = (DeploymentTrigger) trigger;
+                                deploymentTrigger.checkAndFire(facet);
                             }
                         }
                     }
