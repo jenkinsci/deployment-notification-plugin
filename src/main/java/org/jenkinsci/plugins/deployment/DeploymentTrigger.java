@@ -75,7 +75,7 @@ public class DeploymentTrigger extends Trigger<Job> {
                         if (b!=null) {
                             // pass all the current parameters if we can
                             ParametersAction action = b.getAction(ParametersAction.class);
-                            parameterizedJobMixIn.scheduleBuild2(5, action);
+                            parameterizedJobMixIn.scheduleBuild2(5, new CauseAction(new UpstreamDeploymentCause(b)), action);
                             return;
                         }
                     }
