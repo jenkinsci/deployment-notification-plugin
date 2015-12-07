@@ -37,21 +37,6 @@ public class WorkflowListenerImpl extends DeploymentFacetListener {
         });
     }
 
-    /**
-     * Waits until all the pending deployment facets are processed.
-     */
-    public void sync() throws InterruptedException {
-        try {
-            POOL.submit(new Runnable() {
-                public void run() {
-                    // no-op
-                }
-            }).get();
-        } catch (ExecutionException e) {
-            throw (InterruptedException)new InterruptedException().initCause(e);
-        }
-    }
-
     public final ExecutorService POOL = new ThreadPoolExecutor(0, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
     private static final Logger LOGGER = Logger.getLogger(DeploymentTrigger.class.getName());
 

@@ -19,15 +19,11 @@ import java.util.concurrent.ScheduledFuture;
 public class AwaitDeploymentStepExecution extends AbstractStepExecutionImpl {
 
     @Inject(optional=true) private transient AwaitDeploymentStep awaitDeploymentStep;
-    @StepContextParameter
-    private transient FlowNode node;
-    @StepContextParameter
-    transient Run run;
+    @StepContextParameter private transient FlowNode node;
+    @StepContextParameter transient Run run;
+    @StepContextParameter private transient Run build;
+    @StepContextParameter private transient Job job;
     private transient volatile ScheduledFuture<?> task;
-    @StepContextParameter
-    private transient Run build;
-    @StepContextParameter
-    private transient Job job;
 
     @Override
     public boolean start() throws Exception {
@@ -45,7 +41,7 @@ public class AwaitDeploymentStepExecution extends AbstractStepExecutionImpl {
 
     public void proceed(DeploymentFacet<?> facet, HostRecord newRecord) {
         ThresholdCondition thresholdCondition = new ThresholdCondition(awaitDeploymentStep.getEnv(), awaitDeploymentStep.getThreshold());
-        Fingerprint.RangeSet r = thresholdCondition.calcMatchingBuildNumberOf(null, facet.getFingerprint(), job);
+        Fingerprint.RangeSet r = thresholdCondition.calcMatchingBuildNumberOf(job, facet.getFingerprint());
 
         if (!r.isEmpty()) {
             for (Integer n : r.listNumbers()) {

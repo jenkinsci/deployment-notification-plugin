@@ -38,43 +38,15 @@ public class ThresholdCondition extends Condition {
 
 
     @Override
-    public RangeSet calcMatchingBuildNumberOf(Job upstream, DeploymentFacet<?> facet, Job workflowJob) {
+    public RangeSet calcMatchingBuildNumberOf(Job upstream, DeploymentFacet<?> facet) {
         Fingerprint f = facet.getFingerprint();
         RangeSet r;
 
-        if (upstream==null && workflowJob==null)     return new RangeSet();
-
-        if (workflowJob==null) {
-            r = f.getRangeSet(upstream);
-            if (r.isEmpty())        return new RangeSet();
-        } else {
-            r = f.getRangeSet(workflowJob);
-            if (r.isEmpty())        return new RangeSet();
-        }
-
-        // at this point, we verified that the fingerprint touches the project we care about
-
-        // count the deployment
-        Set<String> hosts = new HashSet<String>();
-        for (HostRecord hr : facet.records) {
-            if (env==null || env.equals(hr.getEnv()))
-                hosts.add(hr.getHost());
-            if (hosts.size()>=threshold)
-                return r;
-        }
-
-        // not enough deployments have happened yet
-        return new RangeSet();
-    }
-
-    @Deprecated
-    @Override
-    public RangeSet calcMatchingBuildNumberOf(Job upstream, DeploymentFacet<?> facet) {
-        Fingerprint f = facet.getFingerprint();
-
         if (upstream==null)     return new RangeSet();
-        RangeSet r = f.getRangeSet(upstream);
+
+        r = f.getRangeSet(upstream);
         if (r.isEmpty())        return new RangeSet();
+
 
         // at this point, we verified that the fingerprint touches the project we care about
 
