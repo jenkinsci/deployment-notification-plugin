@@ -36,13 +36,17 @@ public class ThresholdCondition extends Condition {
         return threshold;
     }
 
+
     @Override
     public RangeSet calcMatchingBuildNumberOf(Job upstream, DeploymentFacet<?> facet) {
         Fingerprint f = facet.getFingerprint();
+        RangeSet r;
 
         if (upstream==null)     return new RangeSet();
-        RangeSet r = f.getRangeSet(upstream);
+
+        r = f.getRangeSet(upstream);
         if (r.isEmpty())        return new RangeSet();
+
 
         // at this point, we verified that the fingerprint touches the project we care about
 
