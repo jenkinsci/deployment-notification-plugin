@@ -55,8 +55,4 @@ public class AwaitDeploymentStepExecution extends AbstractStepExecutionImpl {
         }
     }
 
-    @Override public void onResume() {
-        super.onResume();
-    }
-
 }

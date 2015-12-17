@@ -18,7 +18,6 @@ public abstract class Condition extends AbstractDescribableImpl<Condition> imple
      */
     public abstract RangeSet calcMatchingBuildNumberOf(Job upstream, DeploymentFacet<?> facet);
 
-    @Deprecated
     public RangeSet calcMatchingBuildNumberOf(Job upstream, Fingerprint f) {
         for (FingerprintFacet ff : f.getFacets()) {
             if (ff instanceof DeploymentFacet) {
