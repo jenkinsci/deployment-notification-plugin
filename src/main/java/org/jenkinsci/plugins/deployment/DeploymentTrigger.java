@@ -77,7 +77,6 @@ public class DeploymentTrigger extends Trigger<Job> {
             };
 
             RangeSet r = cond.calcMatchingBuildNumberOf(upstream, facet);
-
             if (!r.isEmpty()) {
                 if (findTriggeredRecord(facet.getFingerprint()).add(this)) {
                     for (Integer n : r.listNumbers()) {
@@ -88,14 +87,12 @@ public class DeploymentTrigger extends Trigger<Job> {
                             if (hostRecord != null) {
                                 List<HostRecord> listHostRecord = new ArrayList();
                                 Iterator iterator = facet.records.iterator();
-                                while(iterator.hasNext()) {
+                                while (iterator.hasNext()) {
                                     listHostRecord.add((HostRecord) iterator.next());
                                 }
                                 HostRecords hostrecords = new HostRecords(listHostRecord);
-                                job.scheduleBuild(job.getQuietPeriod(), new UpstreamDeploymentCause(b), action, hostrecords);
+                                parameterizedJobMixIn.scheduleBuild2(5, new CauseAction(new UpstreamDeploymentCause(b)), action);
                             }
-
-                            parameterizedJobMixIn.scheduleBuild2(5, new CauseAction(new UpstreamDeploymentCause(b)), action);
                             return;
                         }
                     }
@@ -129,16 +126,12 @@ public class DeploymentTrigger extends Trigger<Job> {
         public void onChange(final DeploymentFacet facet, final HostRecord newRecord) {
             POOL.submit(new Runnable() {
                 public void run() {
-                    for (AbstractProject<?,?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
-                        DeploymentTrigger t = p.getTrigger(DeploymentTrigger.class);
-                        if (t!=null) {
-                            t.checkAndFire(facet, newRecord);
                     //TODO - 1.621: use getTrigger(Job<?,?> job, Class<T> clazz)
                     for (ParameterizedJobMixIn.ParameterizedJob parameterizedJob : Jenkins.getInstance().getAllItems(ParameterizedJobMixIn.ParameterizedJob.class)) {
                         for (Trigger trigger : parameterizedJob.getTriggers().values()) {
                             if (trigger instanceof DeploymentTrigger) {
                                 DeploymentTrigger deploymentTrigger = (DeploymentTrigger) trigger;
-                                deploymentTrigger.checkAndFire(facet);
+                                deploymentTrigger.checkAndFire(facet, newRecord);
                             }
                         }
                     }
