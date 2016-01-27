@@ -1,9 +1,9 @@
 package org.jenkinsci.plugins.deployment;
 
 import hudson.Extension;
-import hudson.model.AbstractProject;
 import hudson.model.AutoCompletionCandidates;
 import hudson.model.BuildableItem;
+import hudson.model.CauseAction;
 import hudson.model.Fingerprint;
 import hudson.model.Fingerprint.RangeSet;
 import hudson.model.Item;
@@ -15,6 +15,7 @@ import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
 import jenkins.model.FingerprintFacet;
 import jenkins.model.Jenkins;
+import jenkins.model.ParameterizedJobMixIn;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -38,7 +39,7 @@ import java.util.logging.Logger;
  *
  * @author Kohsuke Kawaguchi
  */
-public class DeploymentTrigger extends Trigger<AbstractProject> {
+public class DeploymentTrigger extends Trigger<Job> {
     private final String upstreamJob;
     private final Condition cond;
 
@@ -68,6 +69,13 @@ public class DeploymentTrigger extends Trigger<AbstractProject> {
             if (upstream==null)
                 upstream = Jenkins.getInstance().getItem(upstreamJob, job, Job.class);
 
+            //TODO: Jenkins 1.621+ can avoid to implement an inner inline class in code directly calling ParameterizedJobMixIn.scheduleBuild2
+            ParameterizedJobMixIn parameterizedJobMixIn = new ParameterizedJobMixIn() {
+                @Override protected Job asJob() {
+                    return job;
+                }
+            };
+
             RangeSet r = cond.calcMatchingBuildNumberOf(upstream, facet);
 
             if (!r.isEmpty()) {
@@ -86,12 +94,14 @@ public class DeploymentTrigger extends Trigger<AbstractProject> {
                                 HostRecords hostrecords = new HostRecords(listHostRecord);
                                 job.scheduleBuild(job.getQuietPeriod(), new UpstreamDeploymentCause(b), action, hostrecords);
                             }
+
+                            parameterizedJobMixIn.scheduleBuild2(5, new CauseAction(new UpstreamDeploymentCause(b)), action);
                             return;
                         }
                     }
 
                     // didn't find any matching build, so just trigger it but without the cause to link to the upstream
-                    job.scheduleBuild();    // TODO: expose a version that takes name and build number
+                    parameterizedJobMixIn.scheduleBuild();    // TODO: expose a version that takes name and build number
                 }
             }
         } catch (IOException e) {
@@ -123,6 +133,13 @@ public class DeploymentTrigger extends Trigger<AbstractProject> {
                         DeploymentTrigger t = p.getTrigger(DeploymentTrigger.class);
                         if (t!=null) {
                             t.checkAndFire(facet, newRecord);
+                    //TODO - 1.621: use getTrigger(Job<?,?> job, Class<T> clazz)
+                    for (ParameterizedJobMixIn.ParameterizedJob parameterizedJob : Jenkins.getInstance().getAllItems(ParameterizedJobMixIn.ParameterizedJob.class)) {
+                        for (Trigger trigger : parameterizedJob.getTriggers().values()) {
+                            if (trigger instanceof DeploymentTrigger) {
+                                DeploymentTrigger deploymentTrigger = (DeploymentTrigger) trigger;
+                                deploymentTrigger.checkAndFire(facet);
+                            }
                         }
                     }
                 }
