@@ -20,8 +20,12 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
+import javax.annotation.CheckForNull;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -55,7 +59,12 @@ public class DeploymentTrigger extends Trigger<Job> {
         return cond;
     }
 
+    @Deprecated
     public void checkAndFire(DeploymentFacet facet) {
+        checkAndFire(facet, null);
+    }
+
+    public void checkAndFire(DeploymentFacet facet, @CheckForNull HostRecord hostRecord) {
         try {
             if (upstream==null)
                 upstream = Jenkins.getInstance().getItem(upstreamJob, job, Job.class);
@@ -75,7 +84,15 @@ public class DeploymentTrigger extends Trigger<Job> {
                         if (b!=null) {
                             // pass all the current parameters if we can
                             ParametersAction action = b.getAction(ParametersAction.class);
-                            parameterizedJobMixIn.scheduleBuild2(5, new CauseAction(new UpstreamDeploymentCause(b)), action);
+                            if (hostRecord != null) {
+                                List<HostRecord> listHostRecord = new ArrayList();
+                                Iterator iterator = facet.records.iterator();
+                                while (iterator.hasNext()) {
+                                    listHostRecord.add((HostRecord) iterator.next());
+                                }
+                                HostRecords hostrecords = new HostRecords(listHostRecord);
+                                parameterizedJobMixIn.scheduleBuild2(5, new CauseAction(new UpstreamDeploymentCause(b)), action);
+                            }
                             return;
                         }
                     }
@@ -106,7 +123,7 @@ public class DeploymentTrigger extends Trigger<Job> {
     @Extension
     public static class ListenerImpl extends DeploymentFacetListener {
         @Override
-        public void onChange(final DeploymentFacet facet, HostRecord newRecord) {
+        public void onChange(final DeploymentFacet facet, final HostRecord newRecord) {
             POOL.submit(new Runnable() {
                 public void run() {
                     //TODO - 1.621: use getTrigger(Job<?,?> job, Class<T> clazz)
@@ -114,7 +131,7 @@ public class DeploymentTrigger extends Trigger<Job> {
                         for (Trigger trigger : parameterizedJob.getTriggers().values()) {
                             if (trigger instanceof DeploymentTrigger) {
                                 DeploymentTrigger deploymentTrigger = (DeploymentTrigger) trigger;
-                                deploymentTrigger.checkAndFire(facet);
+                                deploymentTrigger.checkAndFire(facet, newRecord);
                             }
                         }
                     }

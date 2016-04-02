@@ -8,6 +8,15 @@
     traffic to newer servers.
 
     <p>
+        This plugin injects the following variables:
+
+        <ul>
+            <li><b>DEPLOYMENT_HOST</b> - Host to which the artifact was deployed</li>
+            <li><b>DEPLOYMENT_PATH</b> - Path to which the artifact was deployed</li>
+            <li><b>DEPLOYMENT_TIMESTAMP</b> - Timestamp of the deployment</li>
+        </ul>
+
+    <p>
     This feature critically depends on <a href="https://wiki.jenkins-ci.org/display/JENKINS/Fingerprint">fingerprints</a>
     to function properly.
 
