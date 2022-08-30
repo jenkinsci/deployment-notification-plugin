@@ -56,7 +56,7 @@ public class HostRecord {
     }
 
     public Fingerprint getReplacesFingerprint() throws IOException {
-        return replaces!=null ? Jenkins.getInstance().getFingerprintMap().get(replaces) : null;
+        return replaces!=null ? Jenkins.get().getFingerprintMap().get(replaces) : null;
     }
 
     /**
@@ -67,7 +67,7 @@ public class HostRecord {
      */
     public String getTimestampString() {
         long duration = System.currentTimeMillis()-timestamp;
-        return Util.getPastTimeString(duration);
+        return Util.getTimeSpanString(duration);
     }
 
     @Override
@@ -81,9 +81,7 @@ public class HostRecord {
         if (env != null ? !env.equals(that.env) : that.env != null) return false;
         if (host != null ? !host.equals(that.host) : that.host != null) return false;
         if (path != null ? !path.equals(that.path) : that.path != null) return false;
-        if (replaces != null ? !replaces.equals(that.replaces) : that.replaces != null) return false;
-
-        return true;
+        return replaces != null ? replaces.equals(that.replaces) : that.replaces == null;
     }
 
     @Override

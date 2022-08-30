@@ -16,6 +16,6 @@ public abstract class DeploymentFacetListener implements ExtensionPoint {
     public abstract void onChange(DeploymentFacet facet, HostRecord newRecord);
 
     public static ExtensionList<DeploymentFacetListener> all() {
-        return Jenkins.getInstance().getExtensionList(DeploymentFacetListener.class);
+        return Jenkins.get().getExtensionList(DeploymentFacetListener.class);
     }
 }

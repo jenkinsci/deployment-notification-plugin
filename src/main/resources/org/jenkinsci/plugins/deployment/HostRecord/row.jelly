@@ -1,6 +1,7 @@
 <!--
   Renders a HostRecord as table row
 -->
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <td>${it.env}</td>
   <td>${it.host}</td>
@@ -20,7 +21,7 @@
             <t:buildLink job="${rf.original.job}" number="${rf.original.number}" jobName="${rf.original.name}"/>
             <st:nbsp />
             <a href="${rootURL}/fingerprint/${it.replaces}">
-              <img src="${imagesURL}/16x16/fingerprint.png" alt="fingerprint" height="16" width="16" />
+              <l:icon src="symbol-finger-print-outline plugin-ionicons-api" alt="fingerprint"/>
             </a>
           </j:otherwise>
         </j:choose>

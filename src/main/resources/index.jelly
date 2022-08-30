@@ -1,3 +1,4 @@
+<?jelly escape-by-default='true'?>
 <div>
   This plugin provides abstract common parts for integration with configuration management tools like
   Chef and Puppet.

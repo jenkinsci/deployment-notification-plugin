@@ -9,6 +9,6 @@ import jenkins.model.Jenkins;
  */
 public abstract class ConditionDescriptor extends Descriptor<Condition> {
     public static DescriptorExtensionList<Condition,ConditionDescriptor> all() {
-        return Jenkins.getInstance().getDescriptorList(Condition.class);
+        return Jenkins.get().getDescriptorList(Condition.class);
     }
 }

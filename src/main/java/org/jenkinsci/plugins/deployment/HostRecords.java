@@ -24,13 +24,13 @@
 
 package org.jenkinsci.plugins.deployment;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.model.EnvironmentContributingAction;
 import hudson.model.InvisibleAction;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,21 +41,21 @@ import java.util.List;
  * @version TODO
  */
 public class HostRecords extends InvisibleAction implements EnvironmentContributingAction {
-   private final @Nonnull Collection<HostRecord> hostrecords;
+   private final @NonNull Collection<HostRecord> hostrecords;
 
-    public HostRecords(@Nonnull Collection<HostRecord> hostRecords) {
+    public HostRecords(@NonNull Collection<HostRecord> hostRecords) {
         this.hostrecords = hostRecords;
     }
 
-    public @Nonnull Collection<HostRecord> getHostrecords() {
+    public @NonNull Collection<HostRecord> getHostrecords() {
         return hostrecords;
     }
 
     public void buildEnvVars(AbstractBuild<?, ?> abstractBuild, EnvVars envVars) {
-        @Nonnull final List<String> deploymentEnv = new ArrayList();
-        @Nonnull final List<String> deploymentHost = new ArrayList();
-        @Nonnull final List<String> deploymentPath = new ArrayList();
-        @Nonnull final List<String> deploymentTimeStamp = new ArrayList();
+        @NonNull final List<String> deploymentEnv = new ArrayList();
+        @NonNull final List<String> deploymentHost = new ArrayList();
+        @NonNull final List<String> deploymentPath = new ArrayList();
+        @NonNull final List<String> deploymentTimeStamp = new ArrayList();
 
         Collection<HostRecord> hostRecords = getHostrecords();
 

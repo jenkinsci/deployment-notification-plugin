@@ -1,10 +1,10 @@
 package org.jenkinsci.plugins.deployment.workflowsteps;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Run;
 import jenkins.model.RunAction2;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +60,7 @@ public class AwaitDeploymentAction implements RunAction2 {
         run.save();
     }
 
-    public synchronized void add(@Nonnull AwaitDeploymentStepExecution step) throws IOException {
+    public synchronized void add(@NonNull AwaitDeploymentStepExecution step) throws IOException {
         this.executions.add(step);
         run.save();
     }

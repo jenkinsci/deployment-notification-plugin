@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.deployment;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.Extension;
 import hudson.model.AutoCompletionCandidates;
 import hudson.model.BuildableItem;
@@ -20,11 +21,9 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
-import javax.annotation.CheckForNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -67,7 +66,7 @@ public class DeploymentTrigger extends Trigger<Job> {
     public void checkAndFire(DeploymentFacet facet, @CheckForNull HostRecord hostRecord) {
         try {
             if (upstream==null)
-                upstream = Jenkins.getInstance().getItem(upstreamJob, job, Job.class);
+                upstream = Jenkins.get().getItem(upstreamJob, job, Job.class);
 
             //TODO: Jenkins 1.621+ can avoid to implement an inner inline class in code directly calling ParameterizedJobMixIn.scheduleBuild2
             ParameterizedJobMixIn parameterizedJobMixIn = new ParameterizedJobMixIn() {
@@ -86,9 +85,8 @@ public class DeploymentTrigger extends Trigger<Job> {
                             ParametersAction action = b.getAction(ParametersAction.class);
                             if (hostRecord != null) {
                                 List<HostRecord> listHostRecord = new ArrayList();
-                                Iterator iterator = facet.records.iterator();
-                                while (iterator.hasNext()) {
-                                    listHostRecord.add((HostRecord) iterator.next());
+                                for (Object o : facet.records) {
+                                    listHostRecord.add((HostRecord) o);
                                 }
                                 HostRecords hostrecords = new HostRecords(listHostRecord);
                                 parameterizedJobMixIn.scheduleBuild2(5, new CauseAction(new UpstreamDeploymentCause(b)), action);
@@ -124,15 +122,13 @@ public class DeploymentTrigger extends Trigger<Job> {
     public static class ListenerImpl extends DeploymentFacetListener {
         @Override
         public void onChange(final DeploymentFacet facet, final HostRecord newRecord) {
-            POOL.submit(new Runnable() {
-                public void run() {
-                    //TODO - 1.621: use getTrigger(Job<?,?> job, Class<T> clazz)
-                    for (ParameterizedJobMixIn.ParameterizedJob parameterizedJob : Jenkins.getInstance().getAllItems(ParameterizedJobMixIn.ParameterizedJob.class)) {
-                        for (Trigger trigger : parameterizedJob.getTriggers().values()) {
-                            if (trigger instanceof DeploymentTrigger) {
-                                DeploymentTrigger deploymentTrigger = (DeploymentTrigger) trigger;
-                                deploymentTrigger.checkAndFire(facet, newRecord);
-                            }
+            POOL.submit(() -> {
+                //TODO - 1.621: use getTrigger(Job<?,?> job, Class<T> clazz)
+                for (ParameterizedJobMixIn.ParameterizedJob parameterizedJob : Jenkins.get().getAllItems(ParameterizedJobMixIn.ParameterizedJob.class)) {
+                    for (Object trigger : parameterizedJob.getTriggers().values()) {
+                        if (trigger instanceof DeploymentTrigger) {
+                            DeploymentTrigger deploymentTrigger = (DeploymentTrigger) trigger;
+                            deploymentTrigger.checkAndFire(facet, newRecord);
                         }
                     }
                 }

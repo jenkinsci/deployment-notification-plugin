@@ -13,6 +13,7 @@ out
 .classpath
 .project
 build
+.idea
 
 # vim
 *~
