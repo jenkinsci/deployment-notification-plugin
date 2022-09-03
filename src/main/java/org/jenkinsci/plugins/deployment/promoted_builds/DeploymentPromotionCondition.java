@@ -93,7 +93,7 @@ public class DeploymentPromotionCondition extends PromotionCondition {
         @Override
         public void onChange(final DeploymentFacet facet, HostRecord newRecord) {
             for (String jobFullName : facet.getFingerprint().getJobs()) {
-                Item item = Jenkins.getInstance().getItemByFullName(jobFullName);
+                Item item = Jenkins.get().getItemByFullName(jobFullName);
                 if (!(item instanceof AbstractProject))     continue;
 
                 AbstractProject<?,?> p = (AbstractProject) item;    // job that defines the promotion process

@@ -1,7 +1,10 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
 <div>
   ${%Deployed to servers via configuration management tools}:
   <a href="${rootURL}/fingerprint/${it.md5}" style="padding-left: 1em">
     ${it.displayName}
-    <img src="${imagesURL}/16x16/fingerprint.png" alt="fingerprint" height="16" width="16" />
+    <l:icon src="symbol-finger-print-outline plugin-ionicons-api" alt="fingerprint"/>
   </a>
 </div>
+</j:jelly>

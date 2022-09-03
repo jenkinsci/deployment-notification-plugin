@@ -7,8 +7,6 @@ import org.jenkinsci.plugins.deployment.DeploymentFacetListener;
 import org.jenkinsci.plugins.deployment.DeploymentTrigger;
 import org.jenkinsci.plugins.deployment.HostRecord;
 
-import javax.annotation.Nonnull;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -25,15 +23,11 @@ public class WorkflowListenerImpl extends DeploymentFacetListener {
     @Override
     public void onChange(final DeploymentFacet facet, final HostRecord newRecord) {
         LOGGER.log(Level.FINE, "Deployment triggered");
-        POOL.submit(new Runnable() {
-            public void run() {
-            AwaitDeploymentStepExecution.applyAll(AwaitDeploymentStepExecution.class, new Function<AwaitDeploymentStepExecution, Void>() {
-                @Override public Void apply(@Nonnull AwaitDeploymentStepExecution awaitDeploymentStepExecution) {
-                        awaitDeploymentStepExecution.proceed(facet, newRecord);
-                    return null;
-                }
-            });
-            }
+        POOL.submit(() -> {
+        AwaitDeploymentStepExecution.applyAll(AwaitDeploymentStepExecution.class, awaitDeploymentStepExecution -> {
+                awaitDeploymentStepExecution.proceed(facet, newRecord);
+            return null;
+        });
         });
     }
 
