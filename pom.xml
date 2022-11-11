@@ -27,7 +27,7 @@
   </pluginRepositories>
 
   <properties>
-    <jenkins.version>2.346.1</jenkins.version>
+    <jenkins.version>2.346.3</jenkins.version>
     <spotbugs.threshold>High</spotbugs.threshold>
     <changelist>999999-SNAPSHOT</changelist>
   </properties>
