@@ -37,7 +37,7 @@
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-2.346.x</artifactId>
-        <version>1607.va_c1576527071</version>
+        <version>1678.vc1feb_6a_3c0f1</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -58,7 +58,6 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>ionicons-api</artifactId>
-      <version>19.v744f3b_2b_b_e4e</version>
     </dependency>
   </dependencies>
 
